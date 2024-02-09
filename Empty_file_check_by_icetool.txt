@@ -1,0 +1,31 @@
+//XXXXXXBO JOB (03036T),'LINK',CLASS=A,MSGCLASS=X,NOTIFY=&SYSUID       
+//*------------------------------------------------------------------  
+//EMPTYCHK EXEC PGM=ICETOOL                                            
+//TOOLMSG  DD SYSOUT=*                                                 
+//DFSMSG   DD SYSOUT=*                                                 
+//IN       DD DSN=xxxxxx.PRINT,DISP=SHR                                
+//TOOLIN DD *                                                          
+       COUNT FROM(IN) EMPTY RC4                                        
+/*                                                                     
+//*SET RC=4 IF THE 'IN' DATA SET IS EMPTY, OR-------------------------*
+//*SET RC=0 IF THE 'IN' DATA SET IS NOT EMPTY-------------------------*
+//     IF (EMPTYCHK.RC NE 0) THEN                                      
+//PS075  EXEC EMAIL                                                    
+//SYSUT1 DD *
+HELO CONSECO                                    
+MAIL FROM:<TLVUDE3S@COLPENN.COM>                
+RCPT TO:<KAJANISH.BS@CNOINC.COM>                
+DATA                                            
+FROM: TLVUDE3S@COLPENN.COM                      
+TO:   KAJANISH.BS@CNOINC.COM                    
+SUBJECT: E123 INPUT FILE EMPTY NOTIFICATION.    
+                                                
+HI ALL,                                         
+                                                
+   TODAY WE RECEVIED EMPTY FILE FROM E123 FEED. 
+                                                
+   KINDLY CONTACT REQUIRED TEAM POC.            
+.                                               
+QUIT                                                       
+//     ENDIF                                                           
+//*------------------------------------------------------------------* 
