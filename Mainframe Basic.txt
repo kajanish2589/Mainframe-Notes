@@ -1,0 +1,35 @@
+Mainframe Basic 
+
+Primary quantity = 3 Tracks
+Second quantity = 5 Tracks
+
+Total allocated size = Primary quantity + ( Second quantity * 15 )
+		3+(5*15)
+		78 tracks
+==========================================================
+PDS 
+Space units         ===> TRKS       (BLKS; TRKS; CYLS; KB; or MB)
+Primary quantity    ===> 483        (In above units)             
+Secondary quantity  ===> 0          (In above units)             
+Directory quantity  ===> 800        (Partitioned only)           
+Record format       ===> FB                                      
+Record length       ===> 80         (Use 32768 for LRECL=X)      
+Block size          ===> 9040
+==========================================================                                    
+PS file
+Space units         ===> TRKS       (BLKS; TRKS; CYLS; KB; or MB)     
+Primary quantity    ===> 1          (In above units)                  
+Secondary quantity  ===> 22         (In above units)                  
+Directory quantity  ===> 0          (Partitioned only)                
+Record format       ===> FB                                           
+Record length       ===> 80         (Use 32768 for LRECL=X)           
+Block size          ===> 27920     
+=========================================================
+Loadlib 
+Space units         ===> CYLS       (BLKS; TRKS; CYLS; KB; or MB)  
+Primary quantity    ===> 474        (In above units)               
+Secondary quantity  ===> 15         (In above units)               
+Directory quantity  ===> 0          (Partitioned only)             
+Record format       ===> U                                         
+Record length       ===> 0          (Use 32768 for LRECL=X)        
+Block size          ===> 32760                                                                       
