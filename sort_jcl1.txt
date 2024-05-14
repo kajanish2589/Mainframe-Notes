@@ -1,0 +1,27 @@
+SORT JCL WITH SET KEYWORD AND IF THEN CONDITION
+
+//USERIDSO JOB (03036T,B330),'USERID',MSGLEVEL=(1,1),           
+//    CLASS=A,MSGCLASS=1,                                       
+//    NOTIFY=&SYSUID                                            
+// SET AGENCY1='ORIGN '                                         
+//STEP010  EXEC PGM=IEFBR14                                     
+//DD01     DD  DSN=USERID.BOB.NI.EXTRACT,                       
+//             UNIT=SYSDA,SPACE=(TRK,(0)),                      
+//             DISP=(MOD,DELETE,DELETE)                         
+//PS010    EXEC PGM=SORT,PARM='JP0"&AGENCY1",LIST'              
+//SYSOUT   DD SYSOUT=*                                          
+//SYSPRINT DD SYSOUT=*                                          
+//SYSUDUMP DD SYSOUT=*                                          
+//SORTIN   DD DISP=SHR,DSN=USERID.INPUT   
+//SORTOUT  DD DSN=USERID.PUTPUT,                        
+//            DISP=(NEW,CATLG,DELETE),                          
+//            SPACE=(CYL,(500,200),RLSE),                       
+//            RECFM=FB,LRECL=1000                               
+//SYSIN    DD *                                                 
+  SORT FIELDS=(1,10,CH,A)                               
+  INREC IFTHEN=(WHEN=INIT,FINDREP=(IN=C'  ',OUT=C'')),  
+         IFTHEN=(WHEN=INIT,FINDREP=(IN=C'| ',OUT=C'|')),
+         IFTHEN=(WHEN=INIT,FINDREP=(IN=C' |',OUT=C'|')) 
+  INCLUDE COND=(1,6,CH,EQ,JP0)                          
+  OUTREC BUILD=(7,994,995:C'      ')                    
+/*                                                      
