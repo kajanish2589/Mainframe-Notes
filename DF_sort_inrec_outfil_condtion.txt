@@ -1,0 +1,17 @@
+DF_sort_inrec_outfil_condtion
+//PS010    EXEC PGM=SORT                                 
+//SYSOUT   DD SYSOUT=*                                   
+//SYSPRINT DD SYSOUT=*                                   
+//SYSUDUMP DD SYSOUT=*                                   
+//SORTIN   DD DSN=input name,                 
+//            DISP=SHR                                   
+//SORTOF01 DD DSN=outfile name,              
+//            DISP=(NEW,CATLG,DELETE),                   
+//            SPACE=(CYL,(500,100),RLSE),                
+//            RECFM=FB,LRECL=132                         
+//SYSIN    DD *                                          
+  OPTION COPY                 ==>    copy the infile into out file                         
+  INREC BUILD=(1:1,68,69:C'20',71:69,2,73:74,2,75:76,58)  ==> reformat the input rec  
+  INCLUDE COND=(49,4,CH,EQ,C'BILL')  ==>            place the condition for inrec            
+  OUTFIL FILES=01,INCLUDE=(69,6,CH,EQ,&DATE2-1)   ==>        place the condition with date check  
+//*                                                      
