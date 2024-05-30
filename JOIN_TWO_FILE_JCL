@@ -1,0 +1,79 @@
+//USERIDQP JOB (03036T,B330),'USERID',MSGLEVEL=(1,1),                    
+//    CLASS=A,MSGCLASS=1,                                                
+//    NOTIFY=&SYSUID        
+//*
+//*  JOIN THE TWO FILE BY USING SORT
+//*
+//PS010    EXEC PGM=IEFBR14                                              
+//DD01     DD  DSN=USERID.COUNT.CSV.FORMAT,                              
+//             UNIT=SYSDA,SPACE=(TRK,(0)),                               
+//             DISP=(MOD,DELETE,DELETE)                                  
+//*                                                                      
+//PS020    EXEC PGM=SORT                                                 
+//SYSOUT   DD SYSOUT=*                                                   
+//SYSPRINT DD SYSOUT=*                                                   
+//SYSUDUMP DD SYSOUT=*                                                   
+//SORTJNF1 DD *
+//          TITLE 1 
+/*               
+//*==> before agency update count file
+//         DD DISP=SHR,DSN=USERID.COUNT.TOTAL.PROD.PRE                   
+//SORTJNF2 DD *
+//          TITLE 2
+/*     
+//*==> after agency update count file
+//         DD DISP=SHR,DSN=USERID.COUNT.TOTAL.PROD.POST                  
+//JNF1CNTL DD *                                                          
+  INREC OVERLAY=(81:SEQNUM,8,ZD)
+/*
+//JNF2CNTL DD *                                                          
+  INREC OVERLAY=(81:SEQNUM,8,ZD)
+/*
+//SORTOUT  DD DSN=USERID.COUNT.CSV.FORMAT,                               
+//            DISP=(NEW,CATLG,DELETE),                                   
+//            SPACE=(CYL,(500,200),RLSE),                                
+//            RECFM=FB,LRECL=82                                          
+//SYSIN    DD *                                                          
+  JOINKEYS FILE=F1,FIELDS=(81,8,A),SORTED                                
+  JOINKEYS FILE=F2,FIELDS=(81,8,A),SORTED                                
+  REFORMAT FIELDS=(F1:4,41,F2:4,41)                                      
+  OPTION COPY                                                            
+  OUTREC IFTHEN=(WHEN=INIT,FINDREP=(IN=C'  ',OUT=C'')),
+        IFTHEN=(WHEN=INIT,FINDREP=(IN=C'| ',OUT=C'|')),
+        IFTHEN=(WHEN=INIT,FINDREP=(IN=C' |',OUT=C'|')),
+        IFTHEN=(WHEN=INIT,FINDREP=(IN=C'  ',OUT=C'')),
+        IFTHEN=(WHEN=INIT,FINDREP=(IN=C'   ',OUT=C'')),
+        IFTHEN=(WHEN=INIT,FINDREP=(IN=C'|',OUT=C','))
+/*                                                                       
+//*-----------------------------------------------------------------+
+//*  PS030 : EMAIL STEP                                             |
+//*-----------------------------------------------------------------+
+//PS030   EXEC PGM=IKJEFT1B
+//SYSEXEC  DD DISP=SHR,DSN=PLVU.A1007611.XMITIP
+//SYSTCPD  DD DISP=SHR,DSN=SHRSYS.TCPIP.V34.PARMLIB(TCPDATA)
+//* change the mail id
+//SYSTSIN  DD *
+ %XMITIP                                    -
+   (email_id)        -
+   MSGDD MESSAGE                            -
+   FILEDD (EXTFILE1) -
+   IMPORTANCE  HIGH                         -
+   FORMAT (CSV)         -
+   FILENAME (AGENCY_UPDATE_COUNT.CSV) -
+   FILEDESC (AGENCY_UPDATE_COUNT.CSV) -
+   SUBJECT  'Agency update count excel sheet &DATE' -
+   FROM FTPSCAN@CNOINC.COM
+/*
+//MESSAGE  DD *
+HELLO ALL,
+
+Please find the attached agency update count excel sheet.
+
+Thanks and Regards,
+CPL_ADMIN_TEAM.
+/*
+//EXTFILE1 DD DISP=SHR,DSN=USERID.COUNT.CSV.FORMAT
+//SYSPRINT DD SYSOUT=*
+//SYSTSPRT DD SYSOUT=*
+//*----------------------------------------------------------------+
+
